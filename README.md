@@ -7,4 +7,5 @@ So far, I have implemented the following data structures:
 * Linear Data Structures
 
   * Array
+  * BitArray
 

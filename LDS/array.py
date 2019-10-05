@@ -1,6 +1,7 @@
 class Array:
-    def __init__(self, size):
+    def __init__(self, data_type, size):
         self.alloc_size = size
+        self.data_type = data_type
         self.array = [None] * size
 
     def __iter__(self):
@@ -28,8 +29,9 @@ class Array:
 
     def __setitem__(self, key, value):
         self._check_index(key)
+        if type(value) != self.data_type:
+            raise ValueError("Value for this array must be of {} type".format(self.data_type))
         self.array[key] = value
 
     def __repr__(self):
         return "{}".format(self.array)
-

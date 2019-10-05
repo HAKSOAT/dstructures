@@ -4,5 +4,7 @@ I intend implementing the data structures from [this list](https://en.wikipedia.
 
 So far, I have implemented the following data structures:
 
-* None
+* Linear Data Structures
+
+  * Array
 

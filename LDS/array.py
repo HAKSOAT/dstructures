@@ -88,7 +88,7 @@ class BitArray(Array):
             self.array[i] = value
 
 
-class BitBoard:
+class Bitboard:
     """ A  Bitboard is a 64-bit integer.
         The Bitboard implementation here is unsigned. Hence, negative values are not allowed.
     """
@@ -109,7 +109,9 @@ class BitBoard:
             self._value = bin(temp_value)
 
     def __repr__(self):
-        return self._value.replace(self.binary_prefix, '')
+        number_of_bits = 64
+        result = self._value.replace(self.binary_prefix, '')
+        return result.zfill(number_of_bits)
 
     @property
     def value(self):
@@ -161,7 +163,6 @@ class BitBoard:
     def __lshift__(self, shift_value):
         if type(shift_value) is not int:
             raise ValueError("Must left shift using integers.")
-        temp_value = self._value.replace(self.binary_prefix, '')
         decimal_equivalent = int(self._value, 2)
         self._value = bin(decimal_equivalent << shift_value)
         return self
@@ -169,7 +170,6 @@ class BitBoard:
     def __rshift__(self, shift_value):
         if type(shift_value) is not int:
             raise ValueError("Must right shift using integers.")
-        temp_value = self._value.replace(self.binary_prefix, '')
         decimal_equivalent = int(self._value, 2)
         self._value = bin(decimal_equivalent >> shift_value)
         return self
@@ -188,7 +188,3 @@ class BitBoard:
         if result == -1:
             return None
         return result
-
-a = BitBoard(bit_type="ones")
-a[7] = 0
-print(a)

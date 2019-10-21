@@ -142,7 +142,7 @@ class Bitboard:
         guest_value = int(guest.value, 2)
         # The choice of an all-one BitBoard below has no effect on the results.
         # An all-zero BitBoard will have the same effect.
-        resulting_bitboard = BitBoard(bit_type="ones")
+        resulting_bitboard = Bitboard(bit_type="ones")
         if operator == "and":
             resulting_bitboard.value = bin(host_value & guest_value)
         elif operator == "or":

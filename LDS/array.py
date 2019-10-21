@@ -138,17 +138,17 @@ class Bitboard:
 
     def _apply_operator(self, guest, operator):
         temp_value = self._value.replace(self.binary_prefix, '')
-        host_value = int(temp_value, 2)
-        guest_value = int(guest.value, 2)
+        host_decimal_value = int(temp_value, 2)
+        guest_decimal_value = int(guest.value, 2)
         # The choice of an all-one BitBoard below has no effect on the results.
         # An all-zero BitBoard will have the same effect.
         resulting_bitboard = Bitboard(bit_type="ones")
         if operator == "and":
-            resulting_bitboard.value = bin(host_value & guest_value)
+            resulting_bitboard.value = bin(host_decimal_value & guest_decimal_value)
         elif operator == "or":
-            resulting_bitboard.value = bin(host_value | guest_value)
+            resulting_bitboard.value = bin(host_decimal_value | guest_decimal_value)
         elif operator == "xor":
-            resulting_bitboard.value = bin(host_value ^ guest_value)
+            resulting_bitboard.value = bin(host_decimal_value ^ guest_decimal_value)
         return resulting_bitboard
 
     def __and__(self, guest):
@@ -170,8 +170,8 @@ class Bitboard:
     def __rshift__(self, shift_value):
         if type(shift_value) is not int:
             raise ValueError("Must right shift using integers.")
-        decimal_equivalent = int(self._value, 2)
-        self._value = bin(decimal_equivalent >> shift_value)
+        decimal_value = int(self._value, 2)
+        self._value = bin(decimal_value >> shift_value)
         return self
 
     def first_bit(self):

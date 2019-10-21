@@ -93,7 +93,7 @@ class BitBoard:
         The Bitboard implementation here is unsigned. Hence, negative values are not allowed.
     """
     def __init__(self, value=None, bit_type=None):
-        self.max_value = 65535
+        self.max_value = (2 ** 64) - 1
         self.min_value = 0
         self.binary_prefix = '0b'
         if value is None and bit_type == "ones":
@@ -121,6 +121,18 @@ class BitBoard:
         if not self.min_value <= temp_value <= self.max_value:
             raise ValueError("Must be a valid 64 bit value")
         self._value = bin(temp_value)
+
+    def __setitem__(self, key, value):
+        if type(key) is not int:
+            raise ValueError("Key must be an integer")
+        if value not in [0, 1, "0", "1"]:
+            raise ValueError("Value must be a bit")
+        if not self.min_value <= key <= self.max_value:
+            raise IndexError("Index is out of range")
+        binary_prefix_count = 2
+        pre_index = self.value[:key+binary_prefix_count]
+        post_index = self.value[key+binary_prefix_count+1:]
+        self._value = "{}{}{}".format(pre_index, value, post_index)
 
     def _apply_operator(self, guest, operator):
         temp_value = self._value.replace(self.binary_prefix, '')
@@ -176,3 +188,7 @@ class BitBoard:
         if result == -1:
             return None
         return result
+
+a = BitBoard(bit_type="ones")
+a[7] = 0
+print(a)

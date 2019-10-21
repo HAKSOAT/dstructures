@@ -86,3 +86,93 @@ class BitArray(Array):
         self._check_value(value)
         for i in range(self.alloc_size):
             self.array[i] = value
+
+
+class BitBoard:
+    """ A  Bitboard is a 64-bit integer.
+        The Bitboard implementation here is unsigned. Hence, negative values are not allowed.
+    """
+    def __init__(self, value=None, bit_type=None):
+        self.max_value = 65535
+        self.min_value = 0
+        self.binary_prefix = '0b'
+        if value is None and bit_type == "ones":
+            self._value = bin(self.max_value)
+        elif value is None and bit_type == "zeros":
+            self._value = bin(self.min_value)
+        elif value is None and bit_type not in ["ones", "zeros"]:
+            raise ValueError("The bit_type argument must be 'ones' or 'zeros'")
+        else:
+            temp_value = int("{}".format(value), 2)
+            if not self.min_value <= temp_value <= self.max_value:
+                raise ValueError("Must be a valid 64 bit value")
+            self._value = bin(temp_value)
+
+    def __repr__(self):
+        return self._value.replace(self.binary_prefix, '')
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, v):
+        temp_value = int("{}".format(v), 2)
+        if not self.min_value <= temp_value <= self.max_value:
+            raise ValueError("Must be a valid 64 bit value")
+        self._value = bin(temp_value)
+
+    def _apply_operator(self, guest, operator):
+        temp_value = self._value.replace(self.binary_prefix, '')
+        host_value = int(temp_value, 2)
+        guest_value = int(guest.value, 2)
+        # The choice of an all-one BitBoard below has no effect on the results.
+        # An all-zero BitBoard will have the same effect.
+        resulting_bitboard = BitBoard(bit_type="ones")
+        if operator == "and":
+            resulting_bitboard.value = bin(host_value & guest_value)
+        elif operator == "or":
+            resulting_bitboard.value = bin(host_value | guest_value)
+        elif operator == "xor":
+            resulting_bitboard.value = bin(host_value ^ guest_value)
+        return resulting_bitboard
+
+    def __and__(self, guest):
+        return self._apply_operator(guest, "and")
+
+    def __or__(self, guest):
+        return self._apply_operator(guest, "or")
+
+    def __xor__(self, guest):
+        return self._apply_operator(guest, "xor")
+
+    def __lshift__(self, shift_value):
+        if type(shift_value) is not int:
+            raise ValueError("Must left shift using integers.")
+        temp_value = self._value.replace(self.binary_prefix, '')
+        decimal_equivalent = int(self._value, 2)
+        self._value = bin(decimal_equivalent << shift_value)
+        return self
+
+    def __rshift__(self, shift_value):
+        if type(shift_value) is not int:
+            raise ValueError("Must right shift using integers.")
+        temp_value = self._value.replace(self.binary_prefix, '')
+        decimal_equivalent = int(self._value, 2)
+        self._value = bin(decimal_equivalent >> shift_value)
+        return self
+
+    def first_bit(self):
+        temp_value = self._value.replace(self.binary_prefix, '')
+        reversed_value = temp_value[::-1]
+        result = reversed_value.find("1")
+        if result == -1:
+            return None
+        return result
+
+    def last_bit(self):
+        value = self._value.replace(self.binary_prefix, '')
+        result = value.find("1")
+        if result == -1:
+            return None
+        return result

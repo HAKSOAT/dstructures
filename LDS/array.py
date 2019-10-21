@@ -2,7 +2,7 @@ class Array:
     def __init__(self, size, data_type):
         self.alloc_size = size
         self.data_type = data_type
-        self.array = [None] * size
+        self._array = [None] * size
 
     def __iter__(self):
         self.pointer = 0
@@ -10,11 +10,23 @@ class Array:
 
     def __next__(self):
         if self.pointer < self.alloc_size:
-            result = self.array[self.pointer]
+            result = self._array[self.pointer]
             self.pointer += 1
             return result
         else:
             raise StopIteration
+
+    @property
+    def array(self):
+        return self._array
+
+    @array.setter
+    def array(self, v):
+        if type(v) is not list:
+            raise ValueError("Must be a Python list")
+        for each in v:
+            self._check_value(each)
+        self._array = v
 
     def _check_index(self, key):
         if type(key) != int:
@@ -24,20 +36,20 @@ class Array:
 
     def _check_value(self, value):
         if type(value) != self.data_type:
-            raise ValueError("Value for this array must be of {} type".format(self.data_type))
+            raise ValueError("Values for this array must be of {} type".format(self.data_type))
 
     def __getitem__(self, key):
         self._check_index(key)
-        result = self.array[key]
+        result = self._array[key]
         return result
 
     def __setitem__(self, key, value):
         self._check_index(key)
         self._check_value(value)
-        self.array[key] = value
+        self._array[key] = value
 
     def __repr__(self):
-        return "{}".format(self.array)
+        return "{}".format(self._array)
 
 
 class BitArray(Array):
@@ -47,17 +59,17 @@ class BitArray(Array):
     def __setitem__(self, key, value):
         self._check_index(key)
         self._check_value(value)
-        self.array[key] = value
+        self._array[key] = value
 
     def __invert__(self):
-        for index, value in enumerate(self.array):
+        for index, value in enumerate(self._array):
             if value is None:
                 continue
-            self.array[index] = False if value is True else True
+            self._array[index] = False if value is True else True
 
     def _apply_operator(self, other, operator):
         if type(other) == type(self):
-            zipped_array = list(zip(other.array, self.array))
+            zipped_array = list(zip(other.array, self._array))
             zipped_array_length = len(zipped_array)
             resulting_array = BitArray(zipped_array_length)
             for index, node in enumerate(zipped_array):
@@ -85,7 +97,7 @@ class BitArray(Array):
     def set_all(self, value):
         self._check_value(value)
         for i in range(self.alloc_size):
-            self.array[i] = value
+            self._array[i] = value
 
 
 class Bitboard:

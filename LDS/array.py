@@ -93,25 +93,27 @@ class Bitboard:
         The Bitboard implementation here is unsigned. Hence, negative values are not allowed.
     """
     def __init__(self, value=None, bit_type=None):
-        self.max_value = (2 ** 64) - 1
+        self.number_of_bits = 64
+        self.max_value = (2 ** self.number_of_bits) - 1
         self.min_value = 0
         self.binary_prefix = '0b'
         if value is None and bit_type == "ones":
-            self._value = bin(self.max_value)
+            self._value = bin(self.max_value).replace(self.binary_prefix, '')
         elif value is None and bit_type == "zeros":
-            self._value = bin(self.min_value)
+            temp_value = bin(self.min_value).replace(self.binary_prefix, '')
+            self._value = temp_value.zfill(self.number_of_bits)
         elif value is None and bit_type not in ["ones", "zeros"]:
             raise ValueError("The bit_type argument must be 'ones' or 'zeros'")
         else:
             temp_value = int("{}".format(value), 2)
             if not self.min_value <= temp_value <= self.max_value:
                 raise ValueError("Must be a valid 64 bit value")
-            self._value = bin(temp_value)
+            temp_value = bin(temp_value).replace(self.binary_prefix, '')
+            self._value = temp_value.zfill(self.number_of_bits)
 
     def __repr__(self):
-        number_of_bits = 64
         result = self._value.replace(self.binary_prefix, '')
-        return result.zfill(number_of_bits)
+        return result.zfill(self.number_of_bits)
 
     @property
     def value(self):
@@ -122,7 +124,8 @@ class Bitboard:
         temp_value = int("{}".format(v), 2)
         if not self.min_value <= temp_value <= self.max_value:
             raise ValueError("Must be a valid 64 bit value")
-        self._value = bin(temp_value)
+        temp_value = bin(temp_value).replace(self.binary_prefix, '')
+        self._value = temp_value.zfill(self.number_of_bits)
 
     def __setitem__(self, key, value):
         if type(key) is not int:
@@ -131,9 +134,8 @@ class Bitboard:
             raise ValueError("Value must be a bit")
         if not self.min_value <= key <= self.max_value:
             raise IndexError("Index is out of range")
-        binary_prefix_count = 2
-        pre_index = self.value[:key+binary_prefix_count]
-        post_index = self.value[key+binary_prefix_count+1:]
+        pre_index = self._value[:key]
+        post_index = self._value[key+1:]
         self._value = "{}{}{}".format(pre_index, value, post_index)
 
     def _apply_operator(self, guest, operator):
@@ -144,11 +146,14 @@ class Bitboard:
         # An all-zero BitBoard will have the same effect.
         resulting_bitboard = Bitboard(bit_type="ones")
         if operator == "and":
-            resulting_bitboard.value = bin(host_decimal_value & guest_decimal_value)
+            temp_value = bin(host_decimal_value & guest_decimal_value).replace(self.binary_prefix, '')
+            resulting_bitboard.value = temp_value.zfill(self.number_of_bits)
         elif operator == "or":
-            resulting_bitboard.value = bin(host_decimal_value | guest_decimal_value)
+            temp_value = bin(host_decimal_value | guest_decimal_value).replace(self.binary_prefix, '')
+            resulting_bitboard.value = temp_value.zfill(self.number_of_bits)
         elif operator == "xor":
-            resulting_bitboard.value = bin(host_decimal_value ^ guest_decimal_value)
+            temp_value = bin(host_decimal_value ^ guest_decimal_value).replace(self.binary_prefix, '')
+            resulting_bitboard.value = temp_value.zfill(self.number_of_bits)
         return resulting_bitboard
 
     def __and__(self, guest):
@@ -164,27 +169,27 @@ class Bitboard:
         if type(shift_value) is not int:
             raise ValueError("Must left shift using integers.")
         decimal_value = int(self._value, 2)
-        self._value = bin(decimal_value << shift_value)
+        temp_value = bin(decimal_value << shift_value)
+        self._value = temp_value.zfill(self.number_of_bits)
         return self
 
     def __rshift__(self, shift_value):
         if type(shift_value) is not int:
             raise ValueError("Must right shift using integers.")
         decimal_value = int(self._value, 2)
-        self._value = bin(decimal_value >> shift_value)
+        temp_value = bin(decimal_value >> shift_value)
+        self._value = temp_value.zfill(self.number_of_bits)
         return self
 
     def first_bit(self):
-        temp_value = self._value.replace(self.binary_prefix, '')
-        reversed_value = temp_value[::-1]
+        reversed_value = self._value[::-1]
         result = reversed_value.find("1")
         if result == -1:
             return None
         return result
 
     def last_bit(self):
-        value = self._value.replace(self.binary_prefix, '')
-        result = value.find("1")
+        result = self._value.find("1")
         if result == -1:
             return None
         return result

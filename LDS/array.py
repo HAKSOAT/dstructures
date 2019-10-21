@@ -163,8 +163,8 @@ class Bitboard:
     def __lshift__(self, shift_value):
         if type(shift_value) is not int:
             raise ValueError("Must left shift using integers.")
-        decimal_equivalent = int(self._value, 2)
-        self._value = bin(decimal_equivalent << shift_value)
+        decimal_value = int(self._value, 2)
+        self._value = bin(decimal_value << shift_value)
         return self
 
     def __rshift__(self, shift_value):

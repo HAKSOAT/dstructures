@@ -7,8 +7,9 @@ So far, I have implemented the following data structures:
 * Linear Data Structures
 
   * Array
-  * BitArray
+  * Bit Array
   * [Bit Field](https://en.wikipedia.org/wiki/Bit_field) (Looks like more of a C, C++ thing; so I am yet to wrap my head around how to implement such in Python.
   I'd appreciate some help.)
   * Bitboard: [Link 1](http://pages.cs.wisc.edu/~psilord/blog/data/chess-pages/rep.html)
+  * Bitmap (This is the same as a Bit array)
 

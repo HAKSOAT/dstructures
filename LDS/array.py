@@ -213,50 +213,50 @@ class CircularBuffer:
         self._buffer = [None] * self.buffer_length
         # Value of -1 is chosen because:
         # the logic used involves incrementing the index before the write operation
-        self.write_start_index = -1
-        self.read_start_index = 0
-        self.write_pointer = self.write_start_index
-        self.read_pointer = self.read_start_index
+        self._write_start_index = -1
+        self._read_start_index = 0
+        self._write_pointer = self._write_start_index
+        self._read_pointer = self._read_start_index
 
-    def increment_pointer(self, pointer_type):
+    def _increment_pointer(self, pointer_type):
         if pointer_type == "write":
-            self.write_pointer += 1
+            self._write_pointer += 1
             # Handles cases of buffer overwrite
             # Where the read pointer needs to shift based on how much data is overwritten
-            if self.get_index("read") == self.get_index("write"):
-                self.read_pointer += 1
+            if self._get_index("read") == self._get_index("write"):
+                self._read_pointer += 1
         elif pointer_type == "read":
-            self.read_pointer += 1
+            self._read_pointer += 1
         else:
             raise ValueError("Pointer type must be read or write")
 
-    def get_index(self, pointer_type):
+    def _get_index(self, pointer_type):
         if pointer_type == "write":
-            if self.write_pointer < self.buffer_length:
-                index = self.write_pointer
+            if self._write_pointer < self.buffer_length:
+                index = self._write_pointer
             else:
-                index = self.write_pointer % self.buffer_length
+                index = self._write_pointer % self.buffer_length
             return index
         elif pointer_type == "read":
-            if self.read_pointer < self.buffer_length:
-                index = self.read_pointer
+            if self._read_pointer < self.buffer_length:
+                index = self._read_pointer
             else:
-                index = self.read_pointer % self.buffer_length
+                index = self._read_pointer % self.buffer_length
             return index
         else:
             raise ValueError("Pointer type must be read or write")
 
     def add(self, value):
-        self.increment_pointer("write")
-        write_index = self.get_index("write")
+        self._increment_pointer("write")
+        write_index = self._get_index("write")
         self._buffer[write_index] = value
 
     def pop(self):
         # Prevents read operation if no write operation has been done
-        if self.write_pointer == self.write_start_index:
+        if self._write_pointer == self._write_start_index:
             return None
-        read_index = self.get_index("read")
+        read_index = self._get_index("read")
         popped = self._buffer[read_index]
         self._buffer[read_index] = None
-        self.increment_pointer("read")
+        self._increment_pointer("read")
         return popped

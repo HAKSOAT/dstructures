@@ -218,6 +218,9 @@ class CircularBuffer:
         self._write_pointer = self._write_start_index
         self._read_pointer = self._read_start_index
 
+    def __repr__(self):
+        return "{}".format(self._buffer)
+
     def _increment_pointer(self, pointer_type):
         if pointer_type == "write":
             self._write_pointer += 1
